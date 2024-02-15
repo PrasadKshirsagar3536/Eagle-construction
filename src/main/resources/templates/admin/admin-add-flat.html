@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head th:replace="admin/common/layout.html :: header"></head>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<!-- Toastr JS -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+	crossorigin="anonymous">
+
+<body onload="getFlatTableValue();">
+	<div class="container-scroller">
+		<!-- first-navbar-->
+		<nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row"
+			th:replace="admin/common/layout.html :: first-top-navbar"></nav>
+		<div class="container-fluid page-body-wrapper">
+			<!-- sidebar -->
+			<nav class="sidebar sidebar-offcanvas" id="sidebar"
+				th:replace="admin/common/layout.html :: sidebar"></nav>
+			<!-- sidebar end -->
+			<div class="main-panel">
+				<div class="content-wrapper">
+					<div class="row">
+						<div class="col-lg-12 stretch-card">
+							<div class="card">
+								<div class="card-body">
+									<h4 class="card-title">Flat Details</h4>
+									<div class="row">
+										<div class="col-lg-4">
+											<button type="button" class="btn btn-primary btn-sm"
+												data-toggle="modal" data-target="#flatAddModal">
+												<i class="typcn typcn-user"></i> Add Flat
+											</button>
+										</div>
+
+										<!-- **********************************Start*******For Sorting Project Name and Flat Type**************************************************-->
+										<div class="col-lg-4">
+											<label for="projectFilter">Select Project Name:</label> <select
+												class="form-control" id="projectFilter"
+												onchange="filterByProjectAndFlatType()">
+												<option value="all">All</option>
+											</select>
+										</div>
+										<div class="col-lg-4">
+											<label for="flatTypeFilter">Filter by Flat Type:</label> <select
+												class="form-control" id="flatTypeFilter"
+												onchange="filterByProjectAndFlatType()">
+												<option value="all">All</option>
+												<option value="1 BHK">1 BHK</option>
+												<option value="2 BHK">2 BHK</option>
+												<option value="3 BHK">3 BHK</option>
+												<option value="4 BHK">4 BHK</option>
+												<option value="5 BHK">5 BHK</option>
+											</select>
+										</div>
+									</div>
+									<!-- **********************************End*******For Sorting Project Name and Flat Type**************************************************-->
+
+									<div class="table-responsive pt-3">
+										<table class="table table-bordered">
+											<thead>
+												<tr>
+													<th>Project Name</th>
+													<th>Tower</th>
+													<th>Floor</th>
+													<th>Flat</th>
+													<th>Flat Type</th>
+													<th>Room Work Destinations</th>
+													<th>Action</th>
+												</tr>
+											</thead>
+											<tbody id="myTable"></tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- content-wrapper ends -->
+
+				<!-- partial:../../partials/_footer.html -->
+				<footer class="footer"
+					th:replace="admin/common/layout.html :: footer"> </footer>
+				<!-- partial -->
+			</div>
+			<!-- main-panel ends -->
+		</div>
+		<!-- page-body-wrapper ends -->
+	</div>
+	<!-- container-scroller -->
+	<!-- base:js -->
+	<script src="../../vendors/js/vendor.bundle.base.js"></script>
+	<!-- endinject -->
+	<!-- Plugin js for this page-->
+	<!-- End plugin js for this page-->
+	<!-- inject:js -->
+	<script src="../../js/off-canvas.js"></script>
+	<script src="../../js/hoverable-collapse.js"></script>
+	<script src="../../js/template.js"></script>
+	<script src="../../js/settings.js"></script>
+	<script src="../../js/todolist.js"></script>
+	<!-- endinject -->
+	<!-- Custom js for this page-->
+	<!-- End custom js for this page-->
+
+
+	<!-- add flat modal start -->
+	<div class="modal fade" id="flatAddModal" tabindex="-1" role="dialog"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">ADD Flat</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="project-add-flat" class="col-form-label">Project
+										Name:</label> <select class="form-control" id="project-add-flat"
+										onchange="populateTowerDropdown()">
+										<!-- Project options will be populated dynamically -->
+									</select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="Tower-add-flat" class="col-form-label">Tower
+										Name:</label> <select class="form-control" id="Tower-add-flat"
+										onchange="populateFloorDropdown()">
+										<!-- Tower options will be populated dynamically -->
+									</select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="Floor-add-floor" class="col-form-label">Floor
+										No:</label> <select class="form-control" id="Floor-add-floor">
+										<!-- Floor options will be populated dynamically -->
+									</select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="flatType-add-flat" class="col-form-label">Flat
+										Type:</label> <select class="form-control" id="flatType-add-flat">
+										<option>1 BHK</option>
+										<option>2 BHK</option>
+										<option>3 BHK</option>
+										<option>4 BHK</option>
+										<option>5 BHK</option>
+									</select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="work-add-flat" class="col-form-label"> Flat
+										No :</label> <input type="text" class="form-control"
+										id="work-add-flat" required>
+								</div>
+							</div>						
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-success swalDefaultSuccess"
+						onclick="addFlatDetails();">SAVE FLAT</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- add flat modal end -->
+
+	<!-- edit flat modal start -->
+	<div class="modal fade" id="flatEditModal" tabindex="-1" role="dialog"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">EDIT FLAT</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="project-edit-flat" class="col-form-label">Project
+										Name:</label> <select class="form-control" id="project-edit-flat"
+										onchange="populateTowerDropdownForEdit()">
+										<!-- Project options will be populated dynamically -->
+									</select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="Tower-edit-flat" class="col-form-label">Tower
+										Name:</label> <select class="form-control" id="Tower-edit-flat"
+										onchange="populateFloorDropdownForEdit()">
+										<!-- Tower options will be populated dynamically -->
+									</select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="Floor-edit-floor" class="col-form-label">Floor
+										Name:</label> <select class="form-control" id="Floor-edit-floor">
+										<!-- Floor options will be populated dynamically -->
+									</select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="work-edit-flat" class="col-form-label">Flat:</label>
+									<input type="text" class="form-control" id="work-edit-flat"
+										required>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="workDestination-edit-flat" class="col-form-label">Work Destination:</label>
+									<input type="text" class="form-control" id="workDestination-edit-flat"
+										required>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="flatType-edit-flat" class="col-form-label">Flat
+										Type:</label> <select class="form-control" id="flatType-edit-flat">
+										<option>1 BHK</option>
+										<option>2 BHK</option>
+										<option>3 BHK</option>
+										<option>4 BHK</option>
+										<option>5 BHK</option>
+									</select>
+								</div>
+							</div>
+
+							<input type="hidden" id="work-edit-id">
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-success swalDefaultSuccess"
+						onclick="updateFlatDetails();">UPDATE FLAT</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- edit flat modal end -->
+
+
+	<script>
+	
+	
+//*******************************Start*******Sort Project name and Flat Type*****************************************************	
+	// Function to filter table rows based on selected project and flat type
+	function filterByProjectAndFlatType() {
+	    var projectFilter = document.getElementById("projectFilter").value;
+	    var flatTypeFilter = document.getElementById("flatTypeFilter").value;
+	    var rows = document.getElementById("myTable").getElementsByTagName("tr");
+
+	    for (var i = 0; i < rows.length; i++) {
+	        var projectName = rows[i].getElementsByTagName("td")[0].innerText;
+	        var flatType = rows[i].getElementsByTagName("td")[4].innerText;
+	        var projectMatch = (projectFilter === "all" || projectName === projectFilter);
+	        var flatTypeMatch = (flatTypeFilter === "all" || flatType === flatTypeFilter);
+
+	        rows[i].style.display = (projectMatch && flatTypeMatch) ? "" : "none";
+	    }
+	}
+
+	function populateProjectFilterDropdown() {
+	    $.ajax({
+	        type: 'GET',
+	        contentType: 'application/json',
+	        url: '/getAllProjects',
+	        dataType: 'json',
+	        success: function (data) {
+	            const projectDropdown = $('#projectFilter');
+	            projectDropdown.empty(); // Clear existing options
+	            projectDropdown.append('<option value="all">All</option>'); // Add "All" option
+
+	            // Populate dropdown with project names
+	            $.each(data, function (index, project) {
+	                projectDropdown.append(`<option value="${project.projectName}">${project.projectName}</option>`);
+	            });
+	        },
+	        error: function (e) {
+	            console.error('Error fetching project names:', e);
+	        },
+	    });
+	}
+
+          $(document).ready(function() {
+            populateProjectFilterDropdown();
+        });
+
+//*******************************End******Sort Project name and Flat Type***********************************************************
+         
+//******************************Start*******Populate Data in Add Modal**********************************************
+  function populateProjectDropdownForFlat() {
+      	    $.ajax({
+      	        type: 'GET',
+      	        contentType: 'application/json',
+      	        url: '/getAllProjects',
+      	        dataType: 'json',
+      	        success: function (data) {
+      	            const projectDropdown = $('#project-add-flat');
+      	            projectDropdown.empty(); // Clear existing options
+
+      	            // Populate dropdown with project names
+      	            $.each(data, function (index, project) {
+      	                projectDropdown.append(`<option value="${project.id}">${project.projectName}</option>`);
+      	            });
+
+      	            // Populate tower dropdown initially based on the first project (if available)
+      	            populateTowerDropdown();
+      	        },
+      	        error: function (e) {
+      	            console.error('Error fetching project names:', e);
+      	        },
+      	    });
+      	}
+
+      	
+      	$('#flatAddModal').on('shown.bs.modal', function () {
+              populateProjectDropdownForFlat();
+              
+          });
+      	
+
+        function populateTowerDropdown() {
+            var projectId = document.getElementById('project-add-flat').value;
+            $.ajax({
+                type: 'GET',
+                contentType: 'application/json',
+                url: '/getTowersByProject/' + projectId,
+                dataType: 'json',
+                success: function (data) {
+                    const towerDropdown = $('#Tower-add-flat');
+                    towerDropdown.empty();
+
+                    $.each(data, function (index, tower) {
+                        towerDropdown.append(`<option value="${tower.id}">${tower.tower}</option>`);
+                    });
+
+                    // Call the function to populate the floor dropdown
+                    populateFloorDropdown();
+                },
+                error: function (e) {
+                    console.error('Error fetching tower names:', e);
+                },
+            });
+        }
+
+        function populateFloorDropdown() {
+            var towerId = document.getElementById('Tower-add-flat').value;
+            $.ajax({
+                type: 'GET',
+                contentType: 'application/json',
+                url: '/getFloorsByTower/' + towerId,
+                dataType: 'json',
+                success: function (data) {
+
+                    const floorDropdown = $('#Floor-add-floor');
+                    floorDropdown.empty();
+
+                    $.each(data, function (index, floor) {
+                        floorDropdown.append(`<option value="${floor.id}">${floor.floor}</option>`);
+                    });
+                },
+                error: function (e) {
+                    console.error('Error fetching floor names:', e);
+                },
+            });
+        }
+        $('#flatAddModal').on('shown.bs.modal', function () {
+            populateProjectDropdownForFlat();
+        });
+//******************************End*******Populate Data in Add Modal**********************************************
+	
+	
+//******************************Start*******Populate Data in Edit modal to get with id**********************************************
+	
+	function getFlatDetailsById(id) {
+	    $.ajax({
+	        type: "GET",
+	        contentType: "application/json",
+	        url: "/showOneFlat/" + id,
+	        dataType: 'json',
+	        success: function (data) {
+	        	
+	            $('#work-edit-id').val(data.id);
+	            $('#work-edit-flat').val(data.flat);
+	            $('#flatType-edit-flat').val(data.flatType);
+	            $('#workDestination-edit-flat').val(data.workDestination);
+
+	            populateProjectDropdownForEdit(data.project.id,data.tower.id);
+	          
+	           
+	           
+	        },
+	        error: function (e) {
+	            toastr.error('Unable to show floor details');
+	        }
+	    });
+	}
+
+
+	function populateProjectDropdownForEdit(projectId,selectedTower) {
+		
+	    var projectDropdown = $('#project-edit-flat');
+	    projectDropdown.empty();
+
+	    $.ajax({
+	        type: 'GET',
+	        contentType: 'application/json',
+	        url: '/getAllProjects',
+	        dataType: 'json',
+	        success: function (projects) {
+	            if (projects.length > 0) {
+	                $.each(projects, function (index, project) {
+	                    var option = $('<option></option>').attr('value', project.id).text(project.projectName);
+	                    if (project.id === projectId) {
+	                        option.attr('selected', 'selected');
+	                    }
+	                    projectDropdown.append(option);
+	                });
+
+	                // Populate tower dropdown based on the selected project
+	                populateTowerDropdownForEdit(projectId,selectedTower);
+	            } else {
+	                projectDropdown.append('<option value="">No projects available</option>');
+	            }
+	        },
+	        error: function (e) {
+	            console.error('Error fetching project names:', e);
+	        },
+	    });
+	}
+
+	
+	function populateTowerDropdownForEdit(projectId, selectedTower) {
+	    var towerDropdown = $('#Tower-edit-flat');
+	    towerDropdown.empty();
+
+	    $.ajax({
+	        type: 'GET',
+	        contentType: 'application/json',
+	        url: '/getTowersByProject/' + projectId,
+	        dataType: 'json',
+	        success: function (towers) {
+	            if (towers.length > 0) {
+	                $.each(towers, function (index, tower) {
+	                    var option = $('<option></option>').attr('value', tower.id).text(tower.tower);
+	                    if (tower.id === selectedTower) {
+	                        option.attr('selected', 'selected');
+	                    }
+	                    towerDropdown.append(option);
+	                });
+
+	                // Populate floor dropdown based on the selected tower
+	                populateFloorDropdownForEdit(selectedTower);
+	            } else {
+	                towerDropdown.append('<option value="">No towers available</option>');
+	            }
+	        },
+	        error: function (e) {
+	            console.error('Error fetching tower names:', e);
+	        },
+	    });
+	}
+
+	function populateFloorDropdownForEdit(projectId) {
+
+	    var floorDropdown = $('#Floor-edit-floor');
+	    floorDropdown.empty();
+
+	    $.ajax({
+	        type: 'GET',
+	        contentType: 'application/json',
+	        url: '/getFloorsByTower/' + projectId,
+	        dataType: 'json',
+	        success: function (floors) {
+	            if (floors.length > 0) {
+	                $.each(floors, function (index, floor) {
+	                    floorDropdown.append('<option value="' + floor.id + '">' + floor.floor + '</option>');
+	                });
+	            } else {
+	                floorDropdown.append('<option value="">No floors available</option>');
+	            }
+	        },
+	        error: function (e) {
+	            console.error('Error fetching floor names:', e);
+	        },
+	    });
+	}
+	
+	
+//*****************************End********Populate Data in Edit Modal to get with id**********************************************
+	
+	
+function getFlatTableValue() {
+	    $.ajax({
+	        type: "GET",
+	        contentType: "application/json",
+	        url: "/getAllFlat",
+	        data: {},
+	        dataType: 'json',
+	        success: function (data) {
+	            var table = '';
+	            for (var i = 0; i < data.length; i++) {
+	                var rowClass = '';
+	                if (i % 5 === 0) {
+	                    rowClass = 'table-info';
+	                } else if (i % 5 === 1) {
+	                    rowClass = 'table-warning';
+	                } else if (i % 5 === 2) {
+	                    rowClass = 'table-danger';
+	                } else if(i % 5 === 3) {
+	                    rowClass = 'table-success';
+	                }
+	                else {
+	                    rowClass = 'table-primary';
+	                }	                
+	                table += '<tr class="' + rowClass + '">'	                
+	                + '<td>' + data[i].project.projectName + '</td>'
+	                + '<td>' + data[i].tower.tower + '</td>'
+	                + '<td>' + data[i].floor.floor + '</td>'
+	                + '<td>' + data[i].flat+ '</td>'
+	                + '<td>' + data[i].flatType + '</td>'
+	                + '<td>' + data[i].workDestination + '</td>'
+	                + '<td>' +
+	                '<button type="button" class="btn btn-success btn-sm btn-icon-text mr-3" onclick="getFlatDetailsById(' + data[i].id + ');" data-toggle="modal" data-target="#flatEditModal">' + 'EDIT' +'<i class="typcn typcn-edit btn-icon-append"></i>' + '</button>' +
+	                '<button type="button" class="btn btn-danger btn-sm btn-icon-text" onclick="deleteFlatDetailesById(' + data[i].id + ');" >' +'DELETE' +'<i class="typcn typcn-delete-outline btn-icon-append"></i>' + '</button>' 
+	                + '</td>'+ 
+	                '</tr>';
+	            }
+
+	            $('#myTable').html(table);
+	        },
+	        error: function (e) {
+                toastr.error('Unable to Show All floor details');
+	        }
+	    });
+	}
+function addFlatDetails() {
+    var dropdown = document.getElementById('project-add-flat');
+    var dropdown1 = document.getElementById('Tower-add-flat');
+    var dropdown2 = document.getElementById('Floor-add-floor');
+
+    var flatType = document.getElementById('flatType-add-flat').value;
+
+    var workDestination = '';
+     if (flatType === '1 BHK') {
+        workDestination = 'Hall, Kitchen, Bedroom, Bathroom, Toilet';
+        
+    } else if (flatType === '2 BHK') {
+        workDestination = 'Living Room, Master Bedroom, Toilet 1, Balcony, Kitchen, Dining, Dry Balcony, Bedroom 2, Toilet 2';
+    } 
+    else if (flatType === '3 BHK') {
+        workDestination = 'Living Room, Balcony, Dining, Kitchen, Utility, Common Toilet, Passage, Master Bedroom, Master Toilet, Bedroom-2, Toilet-2, Bedroom-3';
+    } 
+    else if (flatType === '4 BHK') {
+        workDestination = 'Hall, Kitchen, Bedroom, M.Bedroom, Bathroom, Toilet';
+    } 
+    else if (flatType === '5 BHK') {
+        workDestination = 'Hall, Kitchen, Bedroom, M.Bedroom, Bathroom, Toilet';
+    } 
+
+    const eagleconstuction = {
+        project: { id: dropdown.options[dropdown.selectedIndex].value },
+        tower: { id: dropdown1.options[dropdown1.selectedIndex].value },
+        floor: { id: dropdown2.options[dropdown2.selectedIndex].value },
+        flat: document.getElementById('work-add-flat').value,
+        flatType: flatType,
+        workDestination: workDestination,
+    };
+
+    $.ajax({
+        type: "POST",
+        contentType: "application/json",
+        url: "/addFlat",
+        data: JSON.stringify(eagleconstuction),
+        dataType: 'json',
+        success: function (data) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Project details saved',
+            }).then(() => {
+                $('#flatAddModal').modal('hide');
+                getFlatTableValue(); // Refresh the flat table after adding
+            });
+        },
+        error: function (e) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Unable to save Flat details',
+            });
+        }
+    });
+}
+
+//Function to populate work destination based on the selected flat type
+function populateWorkDestination() {
+    var flatType = document.getElementById("flatType-edit-flat").value;
+    var workDestinationInput = document.getElementById("workDestination-edit-flat");
+    
+    // Set the work destination based on the selected flat type
+    if (flatType === "1 BHK") {
+        workDestinationInput.value = "Hall, Kitchen, Bedroom, Bathroom, Toilet";
+    } else if (flatType === "2 BHK") {
+        workDestinationInput.value = "Living Room, Master Bedroom, Toilet 1, Balcony, Kitchen, Dining, Dry Balcony, Bedroom 2, Toilet 2";
+    } else if (flatType === "3 BHK") {
+        workDestinationInput.value = "Living Room, Balcony, Dining, Kitchen, Utility, Common Toilet, Passage, Master Bedroom, Master Toilet, Bedroom-2, Toilet-2, Bedroom-3";
+    } else if (flatType === "4 BHK") {
+        workDestinationInput.value = "Hall, Kitchen, Bedroom, M.Bedroom, Bathroom, Toilet";
+    } else if (flatType === "5 BHK") {
+        workDestinationInput.value = "Hall, Kitchen, Bedroom, M.Bedroom, Bathroom, Toilet";
+    }
+}
+
+// Add event listener to the flat type dropdown
+document.getElementById("flatType-edit-flat").addEventListener("change", populateWorkDestination);
+
+// Update flat details function
+function updateFlatDetails() {
+    var dropdown = document.getElementById("project-edit-flat");
+    var dropdown1 = document.getElementById("Tower-edit-flat");
+    var dropdown2 = document.getElementById("Floor-edit-floor");
+
+    var flatType = document.getElementById("flatType-edit-flat").value;
+    var workDestination = document.getElementById("workDestination-edit-flat").value;
+
+    const eagleconstruction = {
+        id: $("#work-edit-id").val(),
+        flat: $("#work-edit-flat").val(),
+        workDestination: workDestination,
+        flatType: flatType,
+        project: { id: dropdown.options[dropdown.selectedIndex].value },
+        tower: { id: dropdown1.options[dropdown1.selectedIndex].value },
+        floor: { id: dropdown2.options[dropdown2.selectedIndex].value },
+    };
+
+    $.ajax({
+        type: "POST",
+        contentType: "application/json",
+        url: "/addFlat",
+        data: JSON.stringify(eagleconstruction),
+        dataType: "json",
+        success: function (data) {
+            Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: "Flat details updated successfully",
+            }).then(() => {
+                $("#flatEditModal").modal("hide");
+                getFlatTableValue(); // Refresh the flat table after updating
+            });
+        },
+        error: function (e) {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Unable to update flat details",
+            });
+        },
+    });
+}
+
+
+
+	function deleteFlatDetailesById(id) {
+	    $.ajax({
+	        type: "DELETE",
+	        contentType: "application/json",
+	        url: "/removeFlat/" + id,
+	        data: {},
+	        success: function (data) {
+	            Swal.fire({
+	            	
+	                icon: 'success',
+	                title: 'Success',
+	                text: 'Flat deleted successfully',
+	            }).then(() => getFlatTableValue());
+	        },
+	        error: function (e) {
+	            Swal.fire({
+	                icon: 'error',
+	                title: 'Error',
+	                text: 'Unable to delete flat details',
+	            });
+	        }
+	    });
+	}
+	/* <div class="col-md-6">
+	<div class="form-group row">
+		<label class="col-sm-3 col-form-label">Project Name</label>
+		<select class="form-control" id="project-add-flat"
+			onchange="populateTowerDropdown()">
+		</select>
+	</div>
+</div> */
+		</script>
+</body>
+
+</html>

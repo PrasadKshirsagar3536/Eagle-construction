@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head th:replace="admin/common/layout.html :: header"></head>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<!-- Toastr JS -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+	integrity="sha384-GLhlTQ8i6NDFOxyAq7F1QQJ1h7jyDPOePTeNb/9z9c29K99a/0qnh12u7F1/er5"
+	crossorigin="anonymous">
+
+<body onload="getTowerTableValue();">
+	<div class="container-scroller">
+		<!-- first-navbar-->
+		<nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row"
+			th:replace="admin/common/layout.html :: first-top-navbar"></nav>
+
+		<div class="container-fluid page-body-wrapper">
+
+			<!-- sidebar -->
+			<nav class="sidebar sidebar-offcanvas" id="sidebar"
+				th:replace="admin/common/layout.html :: sidebar"></nav>
+			<!-- sidebar end -->
+			<div class="main-panel">
+				<div class="content-wrapper">
+					<div class="row">
+
+						<div class="col-lg-12 stretch-card">
+							<div class="card">
+								<div class="card-body">
+									<h4 class="card-title">Tower Details</h4>
+									<!-- Display the project dropdown -->
+									<div class="row mt-3">
+										<div class="col-md-6">
+											<button type="button" class="btn btn-primary btn-sm"
+												data-toggle="modal" data-target="#towerAddModal">
+												<i class="typcn typcn-user"></i> Add Tower
+											</button>
+										</div>
+									</div>
+
+									<div class="table-responsive pt-3">
+										<table class="table table-bordered">
+											<thead>
+												<tr>
+													<th>Project Name</th>
+													<th>Tower</th>
+													<th>Action</th>
+												</tr>
+											</thead>
+											<tbody id="myTable"></tbody>
+
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- content-wrapper ends -->
+
+				<!-- partial:../../partials/_footer.html -->
+				<footer class="footer"
+					th:replace="admin/common/layout.html :: footer"> </footer>
+				<!-- partial -->
+			</div>
+			<!-- main-panel ends -->
+		</div>
+		<!-- page-body-wrapper ends -->
+	</div>
+	<!-- container-scroller -->
+	<!-- base:js -->
+	<script src="../../vendors/js/vendor.bundle.base.js"></script>
+	<!-- endinject -->
+	<!-- Plugin js for this page-->
+	<!-- End plugin js for this page-->
+	<!-- inject:js -->
+	<script src="../../js/off-canvas.js"></script>
+	<script src="../../js/hoverable-collapse.js"></script>
+	<script src="../../js/template.js"></script>
+	<script src="../../js/settings.js"></script>
+	<script src="../../js/todolist.js"></script>
+	<!-- endinject -->
+
+	<!-- add tower modal start -->
+	<div class="modal fade" id="towerAddModal" tabindex="-1" role="dialog"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">ADD TOWER</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="row">
+							<div class="form-group col-md-6">
+								<label for="tower-add-project">Project Name:</label> <select
+									class="form-control" id="tower-add-project"></select>
+							</div>
+							<div class="form-group col-md-6">
+								<label for="work-add-tower">Tower:</label> <input type="text"
+									class="form-control" id="work-add-tower" required>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-success swalDefaultSuccess"
+						onclick="addTowerDetails();">SAVE TOWER</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- add tower modal end -->
+
+	<!-- edit work modal start -->
+	<div class="modal fade" id="towerEditModal" tabindex="-1" role="dialog"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">TOWER EDIT</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="project-add-floor" class="col-form-label">Project
+										Name:</label> <select class="form-control" id="project-add-floor"></select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="work" class="col-form-label"> Tower :</label> <input
+										type="text" class="form-control" id="tower-edit-tower"
+										required>
+								</div>
+							</div>
+							<input type="hidden" id="tower-edit-id">
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-success swalDefaultSuccess"
+						onclick="updateTowerDetails();">UPDATE Tower</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- edit work modal end -->
+
+	<script>
+		// Fetch and populate project names in the dropdown
+		function populateProjectDropdown() {
+			$.ajax({
+				type: 'GET',
+				contentType: 'application/json',
+				url: '/getAllProjects', // Update the URL based on your endpoint
+				dataType: 'json',
+				success: function (data) {
+					var projectDropdown = $('#tower-add-project');
+					projectDropdown.empty(); // Clear existing options
+
+					// Populate dropdown with project names
+					if (data.length > 0) {
+						$.each(data, function (index, project) {
+							projectDropdown.append('<option value="' + project.id + '">' + project.projectName + '</option>');
+						});
+					} else {
+						projectDropdown.append('<option value="">No projects available</option>');
+					}
+				},
+				error: function (e) {
+					console.error('Error fetching project names:', e);
+				},
+			});
+		}
+
+		// Call the function to populate the dropdown when the modal is shown
+		$('#towerAddModal').on('shown.bs.modal', function () {
+			populateProjectDropdown();
+		});
+
+		
+		
+		function addTowerDetails() {
+			var dropdown = document.getElementById('tower-add-project');
+
+			const eagleconstruction = {
+				tower: document.getElementById('work-add-tower').value,
+				project: { id: dropdown.options[dropdown.selectedIndex].value }, // Corrected property name
+			};
+
+			// Check if a project is selected
+			if (!eagleconstruction.project.id) {
+				// Handle the case where no project is selected
+				Swal.fire({
+					icon: 'error',
+					title: 'Error',
+					text: 'Please select a project',
+				});
+				return; // Exit the function
+			}
+
+			$.ajax({
+				type: 'POST',
+				contentType: 'application/json',
+				url: '/addTower',
+				data: JSON.stringify(eagleconstruction),
+				dataType: 'json',
+				 success: function (data) {
+			            Swal.fire({
+			                icon: 'success',
+			                title: 'Success',
+			                text: 'Tower details saved',
+			            }).then(() => {
+		                    $('#towerAddModal').modal('hide');
+		                    getTowerTableValue();
+			            });
+			        },
+			        error: function (e) {
+			            Swal.fire({
+			                icon: 'error',
+			                title: 'Error',
+			                text: 'Unable to save Tower details',
+			            });
+				},
+			});
+		}
+
+		function getTowerDetailsById(id) {
+		    $.ajax({
+		        type: "GET",
+		        contentType: "application/json",
+		        url: "/showOneTower/" + id,
+		        data: {},
+		        dataType: 'json',
+		        success: function (data) {
+		            $('#tower-edit-id').val(data.id);
+		            $('#tower-edit-tower').val(data.tower);
+
+		            // Directly populate the project dropdown with all projects
+		            var projectDropdown = $('#project-add-floor');
+		            projectDropdown.empty(); // Clear existing options
+
+		            // Fetch all projects
+		            $.ajax({
+		                type: 'GET',
+		                contentType: 'application/json',
+		                url: '/getAllProjects', // Update the URL based on your endpoint
+		                dataType: 'json',
+		                success: function (projects) {
+		                    if (projects.length > 0) {
+		                        $.each(projects, function (index, project) {
+		                            projectDropdown.append('<option value="' + project.id + '">' + project.projectName + '</option>');
+		                        });
+
+		                        // Set the selected value
+		                        if (data.project) {
+		                            projectDropdown.val(data.project.id);
+		                        }
+		                    } else {
+		                        projectDropdown.append('<option value="">No projects available</option>');
+		                    }
+		                },
+		                error: function (e) {
+		                    console.error('Error fetching project names:', e);
+		                },
+		            });
+		        },
+		        error: function (e) {
+		            toastr.error('Unable to show tower details');
+		        }
+		    });
+		}
+
+		function updateTowerDetails() {
+		    const eagleconstruction = {
+		        id: document.getElementById('tower-edit-id').value,
+		        tower: document.getElementById('tower-edit-tower').value,
+		        project: { id: $('#project-add-floor').val() }, // Updated to use the project dropdown in the edit modal
+		    };
+
+		    // Check if a project is selected
+		    if (!eagleconstruction.project.id) {
+		        // Handle the case where no project is selected
+		        Swal.fire({
+		            icon: 'error',
+		            title: 'Error',
+		            text: 'Please select a project',
+		        });
+		        return; // Exit the function
+		    }
+
+		    $.ajax({
+		        type: "POST",
+		        contentType: "application/json",
+		        url: "/addTower",
+		        data: JSON.stringify(eagleconstruction),
+		        dataType: 'json',
+		        success: function (data) {
+		            Swal.fire({
+		                icon: 'success',
+		                title: 'Success',
+		                text: 'Tower details updated',
+		            }).then(() => getTowerTableValue());
+		        },
+		        error: function (e) {
+		            Swal.fire({
+		                icon: 'error',
+		                title: 'Error',
+		                text: 'Unable to update tower details',
+		            });
+		        }
+		    });
+		}
+
+
+		function deleteTowerDetailesById(id) {
+			$.ajax({
+				type: "DELETE",
+				contentType: "application/json",
+				url: "/removeTower/" + id,
+				data: {},
+				success: function (data) {
+					Swal.fire({
+						icon: 'success',
+						title: 'Success',
+						text: 'Tower deleted successfully',
+					}).then(() => getTowerTableValue());
+				},
+				error: function (e) {
+					Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Unable to delete Tower details',
+					});
+				}
+			});
+		}
+
+		function getTowerTableValue() {
+			$.ajax({
+				type: "GET",
+				contentType: "application/json",
+				url: "/getAllTower",
+				data: {},
+				dataType: 'json',
+				success: function (data) {
+					console.log(data)
+					var towerTable = '';
+					for (var i = 0; i < data.length; i++) {
+						var rowClass = '';
+						if (i % 5 === 0) {
+							rowClass = 'table-info';
+						} else if (i % 5 === 1) {
+							rowClass = 'table-warning';
+						} else if (i % 5 === 2) {
+							rowClass = 'table-danger';
+						} else if (i % 5 === 3) {
+							rowClass = 'table-success';
+						} else {
+							rowClass = 'table-primary';
+						}
+
+						towerTable += '<tr class="' + rowClass + '">'
+						+ '<td>' + data[i].project.projectName + '</td>'
+							+ '<td>' + data[i].tower + '</td>'
+							+ '<td>' +
+							'<button type="button" class="btn btn-success btn-sm btn-icon-text mr-3" onclick="getTowerDetailsById(' + data[i].id + ');" data-toggle="modal" data-target="#towerEditModal">' + 'EDIT' + '<i class="typcn typcn-edit btn-icon-append"></i>' + '</button>' +
+							'<button type="button" class="btn btn-danger btn-sm btn-icon-text" onclick="deleteTowerDetailesById(' + data[i].id + ');" >' + 'DELETE' + '<i class="typcn typcn-delete-outline btn-icon-append"></i>' + '</button>'
+							+ '</td>' +
+							'</tr>';
+					}
+
+					$('#myTable').html(towerTable);
+				},
+				error: function (e) {
+					toastr.error('Unable to Show All Tower details');
+				}
+			});
+		}
+	</script>
+</body>
+
+</html>

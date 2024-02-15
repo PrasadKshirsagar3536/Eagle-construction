@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+      crossorigin="anonymous">
+
+    <link rel="stylesheet" th:href="@{/styles.css}"> <!-- Link to your external CSS file -->
+
+    <title>Login Form</title>
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="logo">
+        <img src="https://www.freepnglogos.com/uploads/eagle-png-logo/eagle-pcb-crash-when-scrolling-mac-png-logo-24.png"
+             alt="">
+    </div>
+    <div class="text-center mt-4 name">
+        Eagle Construction
+    </div>
+    <form class="p-3 mt-3" th:action="@{/login}" method="post">
+        <div class="form-field d-flex align-items-center">
+            <span class="far fa-user"></span>
+            <input type="email" name="email" id="email" placeholder="Email" th:value="${email}">
+        </div>
+        <div class="form-field d-flex align-items-center">
+            <span class="fas fa-key"></span>
+            <input type="password" name="password" id="password" placeholder="Password" th:value="${password}">
+        </div>
+        <button class="btn mt-3" type="submit">Login</button>
+    </form>
+  
+</div>
+
+</body>
+</html>

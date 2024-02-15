@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head th:replace="admin/common/layout.html :: header"></head>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+	crossorigin="anonymous">
+
+<body onload="getWorkTableValue();">
+	<div class="container-scroller">
+		<!-- first-navbar-->
+		<nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row"
+			th:replace="admin/common/layout.html :: first-top-navbar"></nav>
+
+		<div class="container-fluid page-body-wrapper">
+
+
+			<!-- sidebar -->
+			<nav class="sidebar sidebar-offcanvas" id="sidebar"
+				th:replace="admin/common/layout.html :: sidebar"></nav>
+			<!-- sidebar end -->
+			<div class="main-panel">
+				<div class="card-body">
+					<h4 class="card-title">Employees Task</h4>
+					<form class="form-sample">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Employee Name</label>
+									<div class="col-sm-9">
+										<select class="form-control" id="nameDropdown">
+											<!-- Options will be populated dynamically -->
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Project Name</label>
+									<div class="col-sm-9">
+										<select class="form-control" id="projectNameDropdown">
+											<!-- Options will be populated dynamically -->
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Tower</label>
+									<div class="col-sm-9">
+										<select class="form-control" id="towerDropdown">
+											<!-- Options will be populated dynamically -->
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Floor</label>
+									<div class="col-sm-9">
+										<select class="form-control" id="floorDropdown">
+											<!-- Options will be populated dynamically -->
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Flat</label>
+									<div class="col-sm-9">
+										<select class="form-control" id="flatDropdown">
+											<!-- Options will be populated dynamically -->
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Flat Type</label>
+									<div class="col-sm-9">
+										<select class="form-control" id="flatTypeDropdown">
+											<!-- Options will be populated dynamically -->
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- Add more rows or fields here as needed -->
+
+						<div class="row">
+							
+							<div class="col-md-6">
+								<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Address</label>
+									<div class="col-sm-9">
+										<input type="text" class="form-control" id="addressDropdown">
+									</div>
+								</div>
+							</div>		
+						</div>
+						<div class="row">
+						<div class="col-md-6">
+								<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Work Destination</label>
+									<div class="col-sm-9">
+										<select class="form-control" id="workDestinationDropdown">
+											<!-- Options will be populated dynamically -->
+										</select>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-md-6">
+								<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Status</label>
+									<div class="col-sm-9">
+										<select class="form-control" id="statusDropdown">
+											<option>In-Progress</option>
+											<option>Completed</option>
+											<option>Not Yet Completed</option>
+										</select>
+									</div>
+								</div>
+							</div>
+<!-- 	************************************************************************************************						
+ -->						<!-- 	<div class="col-md-6">
+								<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Work</label>
+									<div class="col-sm-9">
+										<select class="form-control" id="workDropdown">
+											Options will be populated dynamically
+										</select>
+									</div>
+								</div>
+							</div> -->
+<!-- *****************************************************Work**********************************************
+ -->						</div>
+						<button type="button" class="btn btn-success swalDefaultSuccess"
+							onclick="addWorkDetails();">Submit</button>
+					</form>
+
+				</div>
+				<div class="content-wrapper">
+					<div class="row">
+
+
+						<div class="col-lg-12 stretch-card">
+							<div class="card">
+								<div class="card-body">
+									<h4 class="card-title">Task Details</h4>
+									<button type="button" class="btn btn-primary btn-sm"
+										data-toggle="modal" data-target="#workAddModal">
+										<i class="typcn typcn-user"></i> Add Task To Employees
+									</button>
+									<div class="table-responsive pt-3">
+										<table class="table table-bordered">
+											<thead>
+												<tr>
+													<th>Employee Name</th>
+													<th>Project Name</th>
+													<th>Tower</th>
+													<th>Floor</th>
+													<th>Flat</th>
+													<th>Flat Type</th>
+													<th>Address</th>
+													<th>Status</th>
+													<th>Work Destination</th>
+													<th>Work</th>
+													<th>Action</th>
+												</tr>
+											</thead>
+											<tbody id="myTable"></tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- content-wrapper ends -->
+
+
+				<!-- partial:../../partials/_footer.html -->
+				<footer class="footer"
+					th:replace="admin/common/layout.html :: footer"> </footer>
+				<!-- partial -->
+			</div>
+			<!-- main-panel ends -->
+		</div>
+		<!-- page-body-wrapper ends -->
+	</div>
+	<!-- container-scroller -->
+	<!-- base:js -->
+	<script src="../../vendors/js/vendor.bundle.base.js"></script>
+	<!-- endinject -->
+	<!-- Plugin js for this page-->
+	<!-- End plugin js for this page-->
+	<!-- inject:js -->
+	<script src="../../js/off-canvas.js"></script>
+	<script src="../../js/hoverable-collapse.js"></script>
+	<script src="../../js/template.js"></script>
+	<script src="../../js/settings.js"></script>
+	<script src="../../js/todolist.js"></script>
+	<!-- endinject -->
+	<!-- Custom js for this page-->
+	<!-- End custom js for this page-->
+
+
+	<!-- add work modal start -->
+	<div class="modal fade" id="workAddModal" tabindex="-1" role="dialog"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">ADD TASK</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="work" class="col-form-label"> Project Name
+										:</label> <select type="text" class="form-control"
+										id="work-add-project" required></select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="work" class="col-form-label"> Tower :</label> <select
+										type="text" class="form-control" id="work-add-tower" required></select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="work" class="col-form-label"> Floor :</label> <select
+										type="number" class="form-control" id="work-add-floor"
+										required></select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="work" class="col-form-label">Flat :</label> <select
+										type="text" class="form-control" id="work-add-flat" required></select>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="work" class="col-form-label">Work
+										Destination :</label> <input type="text" class="form-control"
+										id="work-add-workDestination" required>
+								</div>
+							</div>
+						</div>
+
+					</form>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-success swalDefaultSuccess"
+						onclick="addWorkDetails1();">SAVE WORK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- add work modal end -->
+
+
+
+	<!-- edit work modal start -->
+	<div class="modal fade" id="workEditModal" tabindex="-1" role="dialog"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">EDIT TASK</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="work" class="col-form-label"> Tower :</label> <input
+										type="text" class="form-control" id="work-edit-tower" required>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="work" class="col-form-label"> Floor :</label> <input
+										type="text" class="form-control" id="work-edit-floor" required>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="work" class="col-form-label">Flat :</label> <input
+										type="text" class="form-control" id="work-edit-flat" required>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="work" class="col-form-label">Work
+										Destination :</label> <input type="text" class="form-control"
+										id="work-edit-workDestination" required>
+								</div>
+							</div>
+						</div>
+						<input type="hidden" id="work-edit-id">
+
+					</form>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-success swalDefaultSuccess"
+						onclick="updateWorkDetails();">UPDATE WORK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- edit work modal end -->
+
+
+
+
+
+	<script>
+	
+	
+  
+	
+	
+//**************************Start***Project form**************************************
+
+	function populateDropdowns() {
+	    $.ajax({
+	        type: 'GET',
+	        contentType: 'application/json',
+	        url: '/getAllProjects',
+	        dataType: 'json',
+	        success: function (projectData) {
+	            const projectDropdown = $('#projectNameDropdown');
+	            projectDropdown.empty();
+	            projectDropdown.append('<option value="">Select Project</option>'); //*******For Blank all First select Project********************************
+	            $.each(projectData, function (index, project) {
+	                projectDropdown.append(`<option value="${project.id}">${project.projectName}</option>`);
+	            });
+	            projectDropdown.trigger('onclick');
+	        },
+	        error: function (e) {
+	            console.error('Error fetching projects:', e);
+	        },
+	    });
+	    
+	    
+	    // Populate Tower Dropdown based on Project selection
+	    $('#projectNameDropdown').on('change', function () {
+	        var projectId = $(this).val();
+	        populateTowerDropdown(projectId);
+	    });
+
+	    // Populate Floor Dropdown based on Project and Tower selection
+	    $('#towerDropdown').on('change', function () {
+	        var projectId = $('#projectNameDropdown').val();
+	        var towerId = $(this).val();
+	        populateFloorDropdown(projectId, towerId);
+	    });
+
+	    // Populate Flat Dropdown based on Project and floor selection
+	    $('#floorDropdown').on('change', function () {
+	        var projectId = $('#projectNameDropdown').val();
+	        var floorId = $(this).val();
+	        populateFlatDropdown(projectId, floorId);
+	    });
+	}
+
+	function populateTowerDropdown(projectId) {
+	    $.ajax({
+	        type: 'GET',
+	        contentType: 'application/json',
+	        url: '/getTowersByProject/' + projectId,
+	        dataType: 'json',
+	        success: function (towerData) {
+	        	console.log()
+	            const towerDropdown = $('#towerDropdown');
+	            towerDropdown.empty();
+	            towerDropdown.append('<option value="">Select Tower</option>'); //*******For Blank all First select Project********************************
+
+	            $.each(towerData, function (index, tower) {
+	                towerDropdown.append(`<option value="${tower.id}">${tower.tower}</option>`);
+	            });
+	            towerDropdown.trigger('onclick');
+	        },
+	        error: function (e) {
+	            console.error('Error fetching towers:', e);
+	        },
+	    });
+	}
+
+	function populateFloorDropdown(projectId, towerId) {
+	    $.ajax({
+	        type: 'GET',
+	        contentType: 'application/json',
+	        url: '/getFloorsByTower/' + towerId,
+	        dataType: 'json',
+	        success: function (floorData) {
+	            const floorDropdown = $('#floorDropdown');
+	            floorDropdown.empty();
+	            floorDropdown.append('<option value="">Select Floor</option>'); 
+
+	            $.each(floorData, function (index, floor) {
+	                floorDropdown.append(`<option value="${floor.id}">${floor.floor}</option>`);
+	            });
+	            floorDropdown.trigger('onclick');
+	        },
+	        error: function (e) {
+	            console.error('Error fetching floors:', e);
+	        },
+	    });
+	}
+
+	function populateFlatDropdown(projectId, floorId) {
+	    $.ajax({
+	        type: 'GET',
+	        contentType: 'application/json',
+	        url: '/getFlatsByFloor/' + floorId,
+	        dataType: 'json',
+	        success: function (flatData) {
+	            const flatDropdown = $('#flatDropdown');
+	            flatDropdown.empty();
+	            flatDropdown.append('<option value="">Select Flat</option>'); //*******For Blank all First select Project********************************
+	            $.each(flatData, function (index, flat) {
+	                flatDropdown.append(`<option value="${flat.id}">${flat.flat}</option>`);
+	            });
+	            flatDropdown.trigger('onclick');
+
+	        },
+	        error: function (e) {
+	            console.error('Error fetching flats:', e);
+	        },
+	    });
+	}
+
+	$(document).ready(function () {
+	    populateDropdowns();
+
+	    $('#flatDropdown').on('change', function () {
+	        var flatId = $(this).val();
+	        fetchFlatDetails(flatId);
+	    });
+	});
+
+	function fetchFlatDetails(flatId) {
+	    $.ajax({
+	        type: 'GET',
+	        contentType: 'application/json',
+	        url: '/showOneFlat/' + flatId,
+	        dataType: 'json',
+	        success: function (data) {
+	            var flatTypeDropdown = $('#flatTypeDropdown');
+	            flatTypeDropdown.empty();
+	            flatTypeDropdown.append(`<option value="${data.flatType}">${data.flatType}</option>`);
+
+	            var workDestinationDropdown = $('#workDestinationDropdown');
+	            workDestinationDropdown.empty();
+	            workDestinationDropdown.append(`<option value="${data.workDestination}">${data.workDestination}</option>`);
+	        },
+	        error: function (e) {
+	            console.error('Error fetching flat details:', e);
+	        }
+	    });
+	}
+
+//**************************End***Project form**************************************
+
+
+//**************************Start***Employee form**************************************
+
+	$(document).ready(function () {
+    populateEmployeeDropdown();
+
+    $('#nameDropdown').on('onclick', function () {
+        var empId = $(this).val();
+        fetchEmployeeDetails(empId);
+    });
+});
+
+function populateEmployeeDropdown() {
+    // Make an AJAX request to fetch employee data
+    $.ajax({
+        type: 'GET',
+        contentType: 'application/json',
+        url: '/get', // Replace this with your endpoint to fetch all employees
+        dataType: 'json',
+        success: function (employeeData) {
+            // Populate the Employee dropdown with employee names
+            var nameDropdown = $('#nameDropdown');
+            nameDropdown.empty();
+            nameDropdown.append('<option value="">Select Employee Name</option>'); 
+            $.each(employeeData, function (index, employee) {
+            	nameDropdown.append(`<option value="${employee.id}">${employee.firstName} ${employee.lastName}</option>`);
+
+            });
+        },
+        error: function (e) {
+            console.error('Error fetching employees:', e);
+        }
+    });
+}
+
+function fetchEmployeeDetails(empId) {
+    // Make an AJAX request to fetch employee details based on the employee ID
+    $.ajax({
+        type: 'GET',
+        contentType: 'application/json',
+        url: '/showOne/' + empId,
+        dataType: 'json',
+        success: function (data) {
+            // Populate the Employee Name dropdown with the fetched employee's first name
+            var nameDropdown = $('#nameDropdown');
+            nameDropdown.empty();
+            nameDropdown.append(`<option value="${data.id}">${data.firstName}</option>`);
+        },
+        error: function (e) {
+            console.error('Error fetching employee details:', e);
+        }
+    });
+}
+//**************************End***Employee form**************************************
+
+
+
+//**************************Start***Project form**************************************
+
+    $(document).ready(function () {
+        populateDropdowns();
+
+        $('#projectNameDropdown').on('change', function () {
+            var projectId = $(this).val();
+            populateAddressDropdown(projectId);
+        });
+    });
+
+    function populateAddressDropdown(projectId) {
+        $.ajax({
+            type: 'GET',
+            contentType: 'application/json',
+            url: '/getProjectById/' + projectId,
+            dataType: 'json',
+            success: function (data) {
+                $('#addressDropdown').val(data.location);
+            },
+            error: function (e) {
+                console.error('Error fetching project details:', e);
+            }
+        });
+    }
+
+//**************************End***Project form**************************************
+
+
+
+	function getWorkTableValue() {
+	    $.ajax({
+	        type: "GET",
+	        contentType: "application/json",
+	        url: "/getAllTasks",
+	        data: {},
+	        dataType: 'json',
+	        success: function (data) {
+	            var table = '';
+
+	            for (var i = 0; i < data.length; i++) {
+	                // Add classes based on conditions
+	                var rowClass = '';
+	                if (i % 5 === 0) {
+	                    rowClass = 'table-info';
+	                } else if (i % 5 === 1) {
+	                    rowClass = 'table-warning';
+	                } else if (i % 5 === 2) {
+	                    rowClass = 'table-danger';
+	                } else if(i % 5 === 3) {
+	                    rowClass = 'table-success';
+	                }
+	                else {
+	                    rowClass = 'table-primary';
+	                }	                
+
+	                table += '<tr class="' + rowClass + '">'
+	                + '<td>' + data[i].firstName + '</td>'
+	                + '<td>' + data[i].lastName + '</td>'
+	                + '<td>' + data[i].projectName + '</td>'
+	                + '<td>' + data[i].tower+ '</td>'
+	                + '<td>' + data[i].floor + '</td>'
+	                + '<td>' + data[i].flat + '</td>'
+	                + '<td>' + data[i].flatType + '</td>'
+	                + '<td>' + data[i].location + '</td>'
+	                + '<td>' + data[i].workDestination + '</td>'
+	               // + '<td>' + data[i].work + '</td>'
+	                + '<td>' + data[i].status + '</td>'
+	                + '<td>' +
+	                '<button type="button" class="btn btn-success btn-sm btn-icon-text mr-3" onclick="getWorkDetailsById(' + data[i].id + ');" data-toggle="modal" data-target="#workEditModal">' + 'EDIT' +'<i class="typcn typcn-edit btn-icon-append"></i>' + '</button>' +
+	                '<button type="button" class="btn btn-danger btn-sm btn-icon-text" onclick="deleteWorkDetailesById(' + data[i].id + ');" >' +'DELETE' +'<i class="typcn typcn-delete-outline btn-icon-append"></i>' + '</button>' 
+	                + '</td>'+ 
+	                '</tr>';
+	            }
+
+	            $('#myTable').html(table);
+	        },
+	        error: function (e) {
+                toastr.error('Unable to Show All Work details');
+	        }
+	    });
+	}
+	
+	function addWorkDetails() {
+	    var formData = {
+	        workDestination: $('#workDestinationDropdown').val(),
+	        location: $('#addressDropdown').val(),
+	        projectName: $('#projectNameDropdown').val(), // Added
+	        tower: $('#towerDropdown').val(), // Added
+	        floor: $('#floorDropdown').val(), // Added
+	        flat: $('#flatDropdown').val(), // Added
+	        flatType: $('#flatTypeDropdown').val() // Added
+	    };
+
+	    $.ajax({
+	        type: "POST",
+	        contentType: "application/json",
+	        url: "/addTask",
+	        data: JSON.stringify(formData),
+	        dataType: 'json',
+
+	        success: function (data) {
+	            Swal.fire({
+	                icon: 'success',
+	                title: 'Success',
+	                text: 'Task details saved',
+	            }).then(() => {
+	                getWorkTableValue();
+	            });
+	        },
+
+	        error: function (e) {
+	            Swal.fire({
+	                icon: 'error',
+	                title: 'Error',
+	                text: 'Unable to save task details',
+	            });
+	        }
+	    });
+	}
+
+	
+	function getWorkDetailsById(id) {
+
+		$.ajax({
+			type : "GET",
+			contentType : "application/json",
+			url : "/getTaskById/" + id,
+			data : {},
+			dataType : 'json',
+
+			success : function(data) {
+
+				$('#work-edit-id').val(data.id);
+				$('#work-edit-tower').val(data.tower);
+				$('#work-edit-floor').val(data.floor);
+				$('#work-edit-flat').val(data.flat);
+				$('#work-edit-workDestination').val(data.workDestination);
+				
+
+			},
+			error : function(e) {
+
+                toastr.error('Unable to show Work details');
+			}
+		});
+
+	}
+	
+
+	function updateWorkDetails() {
+	    const eagleconstruction = {
+	        id: document.getElementById('work-edit-id').value,
+	        tower: document.getElementById('work-edit-tower').value,
+	        floor: document.getElementById('work-edit-floor').value,
+	        flat: document.getElementById('work-edit-flat').value,
+	        workDestination: document.getElementById('work-edit-workDestination').value,
+	    };
+
+	    $.ajax({
+	        type: "POST",
+	        contentType: "application/json",
+	        url: "/addTask",
+	        data: JSON.stringify(eagleconstruction),
+	        dataType: 'json',
+	        success: function (data) {
+	            Swal.fire({
+	                icon: 'success',
+	                title: 'Success',
+	                text: 'Project details updated',
+	            }).then(() => getWorkTableValue());
+	        },
+	        error: function (e) {
+	            Swal.fire({
+	                icon: 'error',
+	                title: 'Error',
+	                text: 'Unable to update work details',
+	            });
+	        }
+	    });
+	}
+
+	function deleteWorkDetailesById(id) {
+	    $.ajax({
+	        type: "DELETE",
+	        contentType: "application/json",
+	        url: "/deleteTaskById/" + id,
+	        data: {},
+	        success: function (data) {
+	            Swal.fire({
+	            	
+	                icon: 'success',
+	                title: 'Success',
+	                text: 'Work deleted successfully',
+	            }).then(() => getWorkTableValue());
+	        },
+	        error: function (e) {
+	            Swal.fire({
+	                icon: 'error',
+	                title: 'Error',
+	                text: 'Unable to delete work details',
+	            });
+	        }
+	    });
+	}
+		</script>
+</body>
+
+</html>

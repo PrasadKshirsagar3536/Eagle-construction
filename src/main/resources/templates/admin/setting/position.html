@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head th:replace="admin/common/layout.html :: header"></head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Toastr JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    integrity="sha384-GLhlTQ8i6NDFOxyAq7F1QQJ1h7jyDPOePTeNb/9z9c29K99a/0qnh12u7F1/er5"
+    crossorigin="anonymous">
+
+<body onload="getPositionTableValue();">
+    <div class="container-scroller">
+        <!-- first-navbar-->
+        <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row"
+            th:replace="admin/common/layout.html :: first-top-navbar"></nav>
+
+        <div class="container-fluid page-body-wrapper">
+
+            <!-- sidebar -->
+            <nav class="sidebar sidebar-offcanvas" id="sidebar"
+                th:replace="admin/common/layout.html :: sidebar"></nav>
+            <!-- sidebar end -->
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <div class="row">
+
+                        <div class="col-lg-12 stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Position Details</h4>
+                                    <!-- Add Position button and modal trigger here -->
+                                    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+                                        data-target="#positionAddModal"><i class="typcn typcn-user"></i> Add Position</button>
+                                    <div class="table-responsive pt-3">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="positionTable"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- content-wrapper ends -->
+
+                <!-- partial:../../partials/_footer.html -->
+                <footer class="footer" th:replace="admin/common/layout.html :: footer"> </footer>
+                <!-- partial -->
+            </div>
+            <!-- main-panel ends -->
+        </div>
+        <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+
+    <!-- base:js -->
+    <script src="../../vendors/js/vendor.bundle.base.js"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page-->
+    <!-- End plugin js for this page-->
+    <!-- inject:js -->
+    <script src="../../js/off-canvas.js"></script>
+    <script src="../../js/hoverable-collapse.js"></script>
+    <script src="../../js/template.js"></script>
+    <script src="../../js/settings.js"></script>
+    <script src="../../js/todolist.js"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page-->
+    <!-- End custom js for this page-->
+ 
+<!--   add Position modal start-->
+<div class="modal fade" id="positionAddModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">POSITION ADD</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="position-add-name" class="col-form-label">Name :</label>
+                                <input type="text" class="form-control" id="position-add-name" required>
+                            </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success swalDefaultSuccess" onclick="addPositionDetails();">SAVE POSITION</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- add Position modal end-->
+
+<!-- update Position modal start-->
+<div class="modal fade" id="positionEditModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">POSITION EDIT</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="position-edit-name" class="col-form-label">Name :</label>
+                                <input type="text" class="form-control" id="position-edit-name" required>
+                            </div>
+                        </div>
+                    </div>
+                                        <input type="hidden" id="position-edit-id">
+                                        <input type="hidden" id="position-edit-position">
+                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success swalDefaultSuccess" onclick="updatePositionDetails();">UPDATE POSITION</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- update Position modal end -->
+
+
+
+
+
+
+    <script>
+    function getPositionTableValue() {
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            url: "/findAllByRoles/Position", 
+            data: {},
+            dataType: 'json',
+            success: function (data) {
+                var table = '';
+
+                for (var i = 0; i < data.length; i++) {
+                    table += '<tr>'
+                        + '<td>' + data[i].name + '</td>'
+                        + '<td>' +
+    	                '<button type="button" class="btn btn-success btn-sm btn-icon-text mr-3" onclick="getPositionDetailsById(' + data[i].id + ');" data-toggle="modal" data-target="#positionEditModal">' + 'EDIT' +'<i class="typcn typcn-edit btn-icon-append"></i>' + '</button>' +
+    	                '<button type="button" class="btn btn-danger btn-sm btn-icon-text" onclick="deletePositionDetailesById(' + data[i].id + ');" >' +'DELETE' +'<i class="typcn typcn-delete-outline btn-icon-append"></i>' + '</button>' 
+    	                + '</td>'+ 
+                        '</tr>';
+                }
+
+                $('#positionTable').html(table);
+            },
+            error: function (e) {
+                toastr.error('Unable to retrieve position roles');
+            }
+        });
+    }
+    
+function addPositionDetails() {
+		
+		const eagleconstuction = {
+
+			name : document.getElementById('position-add-name').value,
+			role : "Position"
+		};
+
+		$.ajax({
+			type : "POST",
+			contentType : "application/json",
+			url : "/addRole",
+			data : JSON.stringify(eagleconstuction),
+			dataType : 'json',
+
+			 success: function (data) {
+		            Swal.fire({
+		                icon: 'success',
+		                title: 'Success',
+		                text: 'Position details saved',
+		            }).then(() => {
+		            	getPositionTableValue();
+		            });
+		        },
+
+		        error: function (e) {
+		            Swal.fire({
+		                icon: 'error',
+		                title: 'Error',
+		                text: 'Unable to save Position details',
+		            });
+		        }
+		    });
+		}
+		
+function getPositionDetailsById(id) {
+	  $("body").children().first().before($(".modal"));
+
+    $.ajax({
+        type: "GET",
+        contentType: "application/json",
+        url: "/showOneRole/" + id,
+        data: {},
+        dataType: 'json',
+        success: function(data) {
+            $('#position-edit-id').val(data.id);
+            $('#position-edit-name').val(data.name);
+            $('#position-edit-position').val(data.role);
+            $('#positionEditModal').modal('show');
+        },
+        error: function(e) {
+            toastr.error('Unable to show position details');
+        }
+    });
+}
+
+
+		
+function updatePositionDetails() {
+    const eagleconstuction = {
+        id: document.getElementById('position-edit-id').value,
+        name: document.getElementById('position-edit-name').value,
+        role: document.getElementById('position-edit-position').value,
+    };
+
+    $.ajax({
+        type: "POST",
+        contentType: "application/json",
+        url: "/addRole",
+        data: JSON.stringify(eagleconstuction),
+        dataType: 'json',
+
+        success: function (data) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Position details updated',
+            }).then(() => getPositionTableValue());
+        },
+
+        error: function (e) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Unable to update Position details',
+            });
+        }
+    });
+}
+function deletePositionDetailesById(id) {
+    $.ajax({
+        type: "DELETE",
+        contentType: "application/json",
+        url: "/removeRole/" + id,
+        data: {},
+        success: function (data) {
+            Swal.fire({
+            	
+                icon: 'success',
+                title: 'Success',
+                text: 'Position deleted successfully',
+            }).then(() => getPositionTableValue());
+        },
+        error: function (e) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Unable to delete position details',
+            });
+        }
+    });
+}
+    </script>
+</body>
+
+</html>

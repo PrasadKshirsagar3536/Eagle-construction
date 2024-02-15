@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head th:replace="admin/common/layout.html :: header"></head>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<!-- Toastr JS -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+	crossorigin="anonymous">
+
+<body onload="getEmployeeTableValue();">
+	<div class="container-scroller">
+		<!-- first-navbar-->
+		<nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row"
+			th:replace="admin/common/layout.html :: first-top-navbar"></nav>
+
+		<div class="container-fluid page-body-wrapper">
+
+
+			<!-- sidebar -->
+			<nav class="sidebar sidebar-offcanvas" id="sidebar"
+				th:replace="admin/common/layout.html :: sidebar"></nav>
+			<!-- sidebar end -->
+			<div class="main-panel">
+				<div class="content-wrapper">
+					<div class="row">
+
+
+						<div class="col-lg-12 stretch-card">
+							<div class="card">
+								<div class="card-body">
+									<h4 class="card-title">Employee Details</h4>
+									<button type="button" class="btn btn-primary btn-sm"
+										data-toggle="modal" data-target="#employeeAddModal">
+										<i class="typcn typcn-user"></i> Add Employee
+									</button>
+									<div class="table-responsive pt-3">
+										<table class="table table-bordered">
+											<thead>
+												<tr>
+													<th>First Name</th>
+													<th>Last Name</th>
+													<th>Email</th>
+													<th>Phone</th>
+													<th>Address</th>
+													<th>Work Location</th>
+													<th>Salary</th>
+													<th>Role</th>
+													<th>Password</th>
+													<th>Action</th>
+												</tr>
+											</thead>
+											<tbody id="myTable"></tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- content-wrapper ends -->
+
+
+				<!-- partial:../../partials/_footer.html -->
+				<footer class="footer"
+					th:replace="admin/common/layout.html :: footer"> </footer>
+				<!-- partial -->
+			</div>
+			<!-- main-panel ends -->
+		</div>
+		<!-- page-body-wrapper ends -->
+	</div>
+	<!-- container-scroller -->
+	<!-- base:js -->
+	<script src="../../vendors/js/vendor.bundle.base.js"></script>
+	<!-- endinject -->
+	<!-- Plugin js for this page-->
+	<!-- End plugin js for this page-->
+	<!-- inject:js -->
+	<script src="../../js/off-canvas.js"></script>
+	<script src="../../js/hoverable-collapse.js"></script>
+	<script src="../../js/template.js"></script>
+	<script src="../../js/settings.js"></script>
+	<script src="../../js/todolist.js"></script>
+	<!-- endinject -->
+	<!-- Custom js for this page-->
+	<!-- End custom js for this page-->
+
+
+	<!-- add employee modal start -->
+	<div class="modal fade" id="employeeAddModal" tabindex="-1"
+		role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">EMPLOYEE ADD</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="row">
+							<!-- First Column - 4 Fields -->
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="employee-add-firstname" class="col-form-label">First
+										Name :</label> <input type="text" class="form-control"
+										id="employee-add-firstname" required>
+								</div>
+								<div class="form-group">
+									<label for="employee-add-email" class="col-form-label">Employee
+										Email :</label> <input type="email" class="form-control"
+										id="employee-add-email" required>
+								</div>
+								<div class="form-group">
+									<label for="employee-add-phone" class="col-form-label">Employee
+										Phone :</label> <input type="number" class="form-control"
+										id="employee-add-phone" required>
+								</div>
+								<div class="form-group">
+									<label for="employee-add-address" class="col-form-label">Employee
+										Address :</label> <input type="text" class="form-control"
+										id="employee-add-address" required>
+								</div>
+							</div>
+							<!-- Second Column - 4 Fields -->
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="employee-add-lastname" class="col-form-label">Last
+										Name :</label> <input type="text" class="form-control"
+										id="employee-add-lastname" required>
+								</div>
+								<div class="form-group">
+									<label for="employee-add-location" class="col-form-label">Employee
+										Work Location :</label> <input type="text" class="form-control"
+										id="employee-add-location" required>
+								</div>
+								<div class="form-group">
+									<label for="employee-add-salary" class="col-form-label">Employee
+										Salary :</label> <input type="number" class="form-control"
+										id="employee-add-salary" required>
+								</div>
+								<div class="form-group">
+									<label for="employee-add-role" class="col-form-label">Employee
+										Role :</label> <select type="text" class="form-control"
+										id="employee-add-role" required>
+										<option>employee</option>
+										<option>admin</option>
+										
+										</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="employee-add-password" class="col-form-label">Employee
+									Password :</label> <input type="text" class="form-control"
+									id="employee-add-password" required>
+							</div>
+						</div>
+					</form>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-success swalDefaultSuccess"
+						onclick="addEmployeeDetails();">SAVE EMPLOYEE</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- add employee modal end -->
+
+
+
+	<!-- edit employee modal start -->
+	<div class="modal fade" id="employeeEditModal" tabindex="-1"
+		role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">EMPLOYEE EDIT</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="employee-edit-firstname" class="col-form-label">First
+										Name :</label> <input type="text" class="form-control"
+										id="employee-edit-firstname" required>
+								</div>
+								<div class="form-group">
+									<label for="employee-edit-phone" class="col-form-label">Employee
+										Phone :</label> <input type="number" class="form-control"
+										id="employee-edit-phone" required>
+								</div>
+							</div>
+							<!-- Second Column - 2 Fields -->
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="employee-edit-lastname" class="col-form-label">Last
+										Name :</label> <input type="text" class="form-control"
+										id="employee-edit-lastname" required>
+								</div>
+								<div class="form-group">
+									<label for="employee-edit-email" class="col-form-label">Employee
+										Email :</label> <input type="email" class="form-control"
+										id="employee-edit-email" required>
+								</div>
+								<div class="form-group">
+									<label for="employee-edit-address" class="col-form-label">Employee
+										Address :</label> <input type="text" class="form-control"
+										id="employee-edit-address" required>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="employee-edit-name" class="col-form-label">Employee
+										Work Location :</label> <input type="text" class="form-control"
+										id="employee-edit-location" required>
+								</div>
+								<div class="form-group">
+									<label for="employee-edit-phone" class="col-form-label">Employee
+										Salary :</label> <input type="number" class="form-control"
+										id="employee-edit-salary" required>
+								</div>
+							</div>
+							<!-- Second Column - 2 Fields -->
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="employee-edit-" class="col-form-label">Employee
+										Role :</label> <input type="email" class="form-control"
+										id="employee-edit-role" required>
+								</div>
+								<div class="form-group">
+									<label for="employee-edit-address" class="col-form-label">Employee
+										Password :</label> <input type="text" class="form-control"
+										id="employee-edit-password" required>
+								</div>
+							</div>
+						</div>
+
+						<input type="hidden" id="employee-edit-empId">
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-success swalDefaultSuccess"
+						onclick="updateEmployeeDetails();">UPDATE EMPLOYEE</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- edit employee modal end -->
+
+
+
+
+
+	<script>
+	function getEmployeeTableValue() {
+	    $.ajax({
+	        type: "GET",
+	        contentType: "application/json",
+	        url: "/get",
+	        data: {},
+	        dataType: 'json',
+	        success: function (data) {
+	            var table = '';
+	            console.log(data);
+
+	            for (var i = 0; i < data.length; i++) {
+	                // Add classes based on conditions
+	                var rowClass = '';
+	                if (i % 5 === 0) {
+	                    rowClass = 'table-info';
+	                } else if (i % 5 === 1) {
+	                    rowClass = 'table-warning';
+	                } else if (i % 5 === 2) {
+	                    rowClass = 'table-danger';
+	                } else if(i % 5 === 3) {
+	                    rowClass = 'table-success';
+	                }
+	                else {
+	                    rowClass = 'table-primary';
+	                }
+
+	                
+
+	                table += '<tr class="' + rowClass + '">'
+	                + '<td>' + data[i].firstName + '</td>'
+	                + '<td>' + data[i].lastName + '</td>'
+	                + '<td>' + data[i].email + '</td>'
+	                + '<td>' + data[i].phone + '</td>'
+	                + '<td>' + data[i].address + '</td>'
+	                + '<td>' + data[i].workLocation + '</td>'
+	                + '<td>' + data[i].salary + '</td>'
+	                + '<td>' + data[i].role + '</td>'
+	                + '<td>' + data[i].password + '</td>'
+	                + '<td>' +
+	                '<button type="button" class="btn btn-success btn-sm btn-icon-text mr-3" onclick="getEmployeeDetailsById(' + data[i].empId + ');" data-toggle="modal" data-target="#employeeEditModal">' + 'EDIT' +'<i class="typcn typcn-edit btn-icon-append"></i>' + '</button>' +
+	                '<button type="button" class="btn btn-danger btn-sm btn-icon-text" onclick="deleteEmployeeDetailesById(' + data[i].empId + ');" >' +'DELETE' +'<i class="typcn typcn-delete-outline btn-icon-append"></i>' + '</button>' 
+	                + '</td>'+ 
+	                '</tr>';
+	            }
+
+	            $('#myTable').html(table);
+	        },
+	        error: function (e) {
+                toastr.error('Unable to Show All Employees details');
+	        }
+	    });
+	}
+	
+	function addEmployeeDetails() {
+		
+		const eagleconstuction = {
+
+			firstName : document.getElementById('employee-add-firstname').value,
+			lastName : document.getElementById('employee-add-lastname').value,
+			email : document.getElementById('employee-add-email').value,
+			phone : document.getElementById('employee-add-phone').value,
+			address : document.getElementById('employee-add-address').value,
+			workLocation : document.getElementById('employee-add-location').value,
+			salary : document.getElementById('employee-add-salary').value,
+			role : document.getElementById('employee-add-role').value,
+			password : document.getElementById('employee-add-password').value,
+
+		}
+
+		$.ajax({
+			type : "POST",
+			contentType : "application/json",
+			url : "/add",
+			data : JSON.stringify(eagleconstuction),
+			dataType : 'json',
+
+			 success: function (data) {
+		            Swal.fire({
+		                icon: 'success',
+		                title: 'Success',
+		                text: 'Employee details saved',
+		            }).then(() => {
+		                getEmployeeTableValue();
+		            });
+		        },
+
+		        error: function (e) {
+		            Swal.fire({
+		                icon: 'error',
+		                title: 'Error',
+		                text: 'Unable to save employee details',
+		            });
+		        }
+		    });
+		}
+	
+	function getEmployeeDetailsById(empId) {
+
+		$.ajax({
+			type : "GET",
+			contentType : "application/json",
+			url : "/showOne/" + empId,
+			data : {},
+			dataType : 'json',
+
+			success : function(data) {
+
+				$('#employee-edit-empId').val(data.empId);
+				$('#employee-edit-firstname').val(data.firstName);
+				$('#employee-edit-lastname').val(data.lastName);
+				$('#employee-edit-email').val(data.email);
+				$('#employee-edit-phone').val(data.phone);
+				$('#employee-edit-address').val(data.address);				
+				$('#employee-edit-location').val(data.workLocation);				
+				$('#employee-edit-salary').val(data.salary);
+				$('#employee-edit-role').val(data.role);				
+				$('#employee-edit-password').val(data.password);
+	            $('#employeeEditModal').modal('show'); // Show the modal after data is loaded
+
+
+			},
+			error : function(e) {
+
+                toastr.error('Unable to show employee details');
+			}
+		});
+
+	}
+	$('.edit-btn').on('click', function() {
+	    var empId = $(this).data('empid');
+	    getEmployeeDetailsById(empId);
+	});
+	
+
+	function updateEmployeeDetails() {
+	    const eagleconstruction = {
+	        empId: document.getElementById('employee-edit-empId').value,
+	        firstName: document.getElementById('employee-edit-firstname').value,
+	        lastName: document.getElementById('employee-edit-lastname').value,
+	        email: document.getElementById('employee-edit-email').value,
+	        phone: document.getElementById('employee-edit-phone').value,
+	        address: document.getElementById('employee-edit-address').value,
+	        workLocation: document.getElementById('employee-edit-location').value,
+	        salary: document.getElementById('employee-edit-salary').value,
+	        role: document.getElementById('employee-edit-role').value,
+	        password: document.getElementById('employee-edit-password').value,
+	    };
+
+	    $.ajax({
+	        type: "PUT",
+	        contentType: "application/json",
+	        url: "/update",
+	        data: JSON.stringify(eagleconstruction),
+	        dataType: 'json',
+	        success: function (data) {
+	            Swal.fire({
+	                icon: 'success',
+	                title: 'Success',
+	                text: 'Employee details updated',
+	            }).then(() => getEmployeeTableValue());
+	        },
+	        error: function (e) {
+	            Swal.fire({
+	                icon: 'error',
+	                title: 'Error',
+	                text: 'Unable to update employee details',
+	            });
+	        }
+	    });
+	}
+
+	function deleteEmployeeDetailesById(empId) {
+	    $.ajax({
+	        type: "DELETE",
+	        contentType: "application/json",
+	        url: "/remove/" + empId,
+	        data: {},
+	        success: function (data) {
+	            Swal.fire({
+	            	
+	                icon: 'success',
+	                title: 'Success',
+	                text: 'Employee deleted successfully',
+	            }).then(() => getEmployeeTableValue());
+	        },
+	        error: function (e) {
+	            Swal.fire({
+	                icon: 'error',
+	                title: 'Error',
+	                text: 'Unable to delete employee details',
+	            });
+	        }
+	    });
+	}
+		</script>
+</body>
+
+</html>

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head th:replace="admin/common/layout.html :: header"></head>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<!-- Toastr JS -->
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+	integrity="sha384-GLhlTQ8i6NDFOxyAq7F1QQJ1h7jyDPOePTeNb/9z9c29K99a/0qnh12u7F1/er5"
+	crossorigin="anonymous">
+
+<body onload="getProjectTableValue();">
+	<div class="container-scroller">
+		<!-- first-navbar-->
+		<nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row"
+			th:replace="admin/common/layout.html :: first-top-navbar"></nav>
+
+		<div class="container-fluid page-body-wrapper">
+
+
+			<!-- sidebar -->
+			<nav class="sidebar sidebar-offcanvas" id="sidebar"
+				th:replace="admin/common/layout.html :: sidebar"></nav>
+			<!-- sidebar end -->
+			<div class="main-panel">
+				<div class="content-wrapper">
+					<div class="row">
+
+
+						<div class="col-lg-12 stretch-card">
+							<div class="card">
+								<div class="card-body">
+									<h4 class="card-title">Project Details</h4>
+									<button type="button" class="btn btn-primary btn-sm"
+										data-toggle="modal" data-target="#projectAddModal">
+										<i class="typcn typcn-user"></i> Add Project
+									</button>
+									<div class="table-responsive pt-3">
+										<table class="table table-bordered">
+											<thead>
+												<tr>
+													<th>Date</th>
+													<th>Project Name</th>
+													<th>Location</th>
+													<th>Status</th>
+													<th>Action</th>
+												</tr>
+											</thead>
+											<tbody id="myTable"></tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- content-wrapper ends -->
+
+
+				<!-- partial:../../partials/_footer.html -->
+				<footer class="footer"
+					th:replace="admin/common/layout.html :: footer"> </footer>
+				<!-- partial -->
+			</div>
+			<!-- main-panel ends -->
+		</div>
+		<!-- page-body-wrapper ends -->
+	</div>
+	<!-- container-scroller -->
+	<!-- base:js -->
+	<script src="../../vendors/js/vendor.bundle.base.js"></script>
+	<!-- endinject -->
+	<!-- Plugin js for this page-->
+	<!-- End plugin js for this page-->
+	<!-- inject:js -->
+	<script src="../../js/off-canvas.js"></script>
+	<script src="../../js/hoverable-collapse.js"></script>
+	<script src="../../js/template.js"></script>
+	<script src="../../js/settings.js"></script>
+	<script src="../../js/todolist.js"></script>
+	<!-- endinject -->
+	<!-- Custom js for this page-->
+	<!-- End custom js for this page-->
+
+
+	<!-- add project modal start -->
+	<div class="modal fade" id="projectAddModal" tabindex="-1"
+		role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">PROJECT ADD</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="project-add-name" class="col-form-label">Project
+										Name :</label> <input type="text" class="form-control"
+										id="project-add-name" required>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="project-add-location" class="col-form-label">Location
+										:</label> <input type="text" class="form-control"
+										id="project-add-location" required>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="project-add-status" class="col-form-label">Status
+								:</label> <select class="form-control" id="project-add-status" required>
+								<option value="New">New</option>
+								<option value="in-progress">In Progress</option>
+								<option value="completed">Completed</option>
+							</select>
+						</div>
+					</form>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-success swalDefaultSuccess"
+						onclick="addProjectDetails();">SAVE PROJECT</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- add employee modal end -->
+
+
+
+	<!-- edit employee modal start -->
+	<div class="modal fade" id="projectEditModal" tabindex="-1"
+		role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">PROJECT EDIT</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="project-add-name" class="col-form-label">Project
+										Name :</label> <input type="text" class="form-control"
+										id="project-edit-name" required>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="project-add-location" class="col-form-label">Location
+										:</label> <input type="text" class="form-control"
+										id="project-edit-location" required>
+								</div>
+							</div>
+								<div class="col-md-6">
+								<div class="form-group">
+									<label for="project-add-location" class="col-form-label">Date
+										:</label> <input type="text" class="form-control"
+										id="project-edit-date" required>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="project-edit-status" class="col-form-label">Status
+								:</label> <select class="form-control" id="project-add-status" required>
+								<option value="New">New</option>
+								<option value="in-progress">In Progress</option>
+								<option value="completed">Completed</option>
+							</select>
+						</div>
+						<input type="hidden" id="project-edit-id">
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-success swalDefaultSuccess"
+						onclick="updateProjectDetails();">UPDATE PROJECT</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- edit employee modal end -->
+
+
+
+
+
+	<script>
+	function getProjectTableValue() {
+	    $.ajax({
+	        type: "GET",
+	        contentType: "application/json",
+	        url: "/getAllProjects",
+	        data: {},
+	        dataType: 'json',
+	        success: function (data) {
+	            var table = '';
+	            console.log(data);
+
+	            for (var i = 0; i < data.length; i++) {
+	                // Add classes based on conditions
+	                var rowClass = '';
+	                if (i % 5 === 0) {
+	                    rowClass = 'table-info';
+	                } else if (i % 5 === 1) {
+	                    rowClass = 'table-warning';
+	                } else if (i % 5 === 2) {
+	                    rowClass = 'table-danger';
+	                } else if(i % 5 === 3) {
+	                    rowClass = 'table-success';
+	                }
+	                else {
+	                    rowClass = 'table-primary';
+	                }	                
+
+	                table += '<tr class="' + rowClass + '">'
+	                + '<td>' + data[i].date + '</td>'
+	                + '<td>' + data[i].projectName + '</td>'
+	                + '<td>' + data[i].location + '</td>'
+	                + '<td>' + data[i].status + '</td>'
+	                + '<td>' +
+	                '<button type="button" class="btn btn-success btn-sm btn-icon-text mr-3" onclick="getProjectDetailsById(' + data[i].id + ');" data-toggle="modal" data-target="#projectEditModal">' + 'EDIT' +'<i class="typcn typcn-edit btn-icon-append"></i>' + '</button>' +
+	                '<button type="button" class="btn btn-danger btn-sm btn-icon-text" onclick="deleteProjectDetailesById(' + data[i].id + ');" >' +'DELETE' +'<i class="typcn typcn-delete-outline btn-icon-append"></i>' + '</button>' 
+	                + '</td>'+ 
+	                '</tr>';
+	            }
+
+	            $('#myTable').html(table);
+	        },
+	        error: function (e) {
+                toastr.error('Unable to Show All Employees details');
+	        }
+	    });
+	}
+	
+	function addProjectDetails() {
+		
+		const eagleconstuction = {
+
+			projectName : document.getElementById('project-add-name').value,
+			location : document.getElementById('project-add-location').value,
+			status : document.getElementById('project-add-status').value,
+		}
+
+		$.ajax({
+			type : "POST",
+			contentType : "application/json",
+			url : "/addProject",
+			data : JSON.stringify(eagleconstuction),
+			dataType : 'json',
+
+			 success: function (data) {
+		            Swal.fire({
+		                icon: 'success',
+		                title: 'Success',
+		                text: 'Project details saved',
+		            }).then(() => {
+		                getProjectTableValue();
+		            });
+		        },
+
+		        error: function (e) {
+		            Swal.fire({
+		                icon: 'error',
+		                title: 'Error',
+		                text: 'Unable to save project details',
+		            });
+		        }
+		    });
+		}
+	
+	function getProjectDetailsById(id) {
+
+		$.ajax({
+			type : "GET",
+			contentType : "application/json",
+			url : "/getProjectById/" + id,
+			data : {},
+			dataType : 'json',
+
+			success : function(data) {
+
+				$('#project-edit-id').val(data.id);
+				$('#project-edit-date').val(data.date);
+				$('#project-edit-name').val(data.projectName);
+				$('#project-edit-location').val(data.location);
+				$('#project-edit-status').val(data.status);
+
+			},
+			error : function(e) {
+
+                toastr.error('Unable to show project details');
+			}
+		});
+
+	}
+	
+
+	function updateProjectDetails() {
+	    const eagleconstruction = {
+	        id: document.getElementById('project-edit-id').value,
+	        date: document.getElementById('project-edit-date').value,
+	        projectName: document.getElementById('project-edit-name').value,
+	        location: document.getElementById('project-edit-location').value,
+	        status: document.getElementById('project-edit-status').value,
+	    };
+
+	    $.ajax({
+	        type: "POST",
+	        contentType: "application/json",
+	        url: "/addProject", // Update the endpoint based on your server-side implementation
+	        data: JSON.stringify(eagleconstruction),
+	        dataType: 'json',
+	        success: function (data) {
+	            Swal.fire({
+	                icon: 'success',
+	                title: 'Success',
+	                text: 'Project details updated',
+	            }).then(() => getProjectTableValue());
+	        },
+	        error: function (e) {
+	            Swal.fire({
+	                icon: 'error',
+	                title: 'Error',
+	                text: 'Unable to update project details',
+	            });
+	        }
+	    });
+	}
+
+	function deleteProjectDetailesById(id) {
+	    $.ajax({
+	        type: "DELETE",
+	        contentType: "application/json",
+	        url: "/deleteProjectById/" + id,
+	        data: {},
+	        success: function (data) {
+	            Swal.fire({
+	            	
+	                icon: 'success',
+	                title: 'Success',
+	                text: 'Project deleted successfully',
+	            }).then(() => getProjectTableValue());
+	        },
+	        error: function (e) {
+	            Swal.fire({
+	                icon: 'error',
+	                title: 'Error',
+	                text: 'Unable to delete project details',
+	            });
+	        }
+	    });
+	}
+		</script>
+</body>
+
+</html>
